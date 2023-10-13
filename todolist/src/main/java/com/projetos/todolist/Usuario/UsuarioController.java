@@ -30,7 +30,8 @@ public class UsuarioController {
         usuarioModel.setSenha(senhaHash);
 
         var usuarioCriado = this.usuarioRepository.save(usuarioModel);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Usuário "+usuarioCriado.getLogin()+" criado com sucesso!");
+        return ResponseEntity.status(HttpStatus.CREATED).body("Usuário "+usuarioCriado.getLogin()+" criado com sucesso! \n\n"
+                + usuarioCriado);
     }
 
 
