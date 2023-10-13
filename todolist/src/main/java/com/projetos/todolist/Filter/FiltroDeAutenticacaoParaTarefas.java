@@ -1,8 +1,11 @@
 package com.projetos.todolist.Filter;
 
+import at.favre.lib.crypto.bcrypt.BCrypt;
+import com.projetos.todolist.Usuario.UsuarioRepository;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -11,6 +14,14 @@ import java.util.Base64;
 
 @Component
 public class FiltroDeAutenticacaoParaTarefas extends OncePerRequestFilter {
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+
+
+
+
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -22,16 +33,22 @@ public class FiltroDeAutenticacaoParaTarefas extends OncePerRequestFilter {
 
         String autorizacaoString = new String(autorizacaoBase64);
 
-        System.out.println("Auth: " +autorizacaoCripto);
-        System.out.println("Senha: "+autorizacaoString);
-
         String[] credencial = autorizacaoString.split(":");
-        String login = credencial[0];
-        String senha = credencial[1];
+        String loginCredencial = credencial[0];
+        String senhaCredencial = credencial[1];
 
-        System.out.println("Login: "+login);
-        System.out.println("Senha: "+senha);
 
-        filterChain.doFilter(request,response);
+        var usuario = this.usuarioRepository.findByLogin(loginCredencial);
+        if (usuario == null){
+            response.sendError(401, "Usuário sem autorização!");
+        }else{
+
+            var verificacaoSenha = BCrypt.verifyer().verify(senhaCredencial.toCharArray(), usuario.getSenha());
+            if(verificacaoSenha.verified){
+                filterChain.doFilter(request,response);
+            } else{
+
+            }
+        }
     }
 }
