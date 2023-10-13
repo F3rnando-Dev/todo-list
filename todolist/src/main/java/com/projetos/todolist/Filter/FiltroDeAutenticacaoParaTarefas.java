@@ -18,11 +18,20 @@ public class FiltroDeAutenticacaoParaTarefas extends OncePerRequestFilter {
         var autorizacao = request.getHeader("Authorization");
         var autorizacaoCripto = autorizacao.substring("Basic".length()).trim();
 
-        byte[] autorizacaoDescripto = Base64.getDecoder().decode(autorizacaoCripto);
+        byte[] autorizacaoBase64 = Base64.getDecoder().decode(autorizacaoCripto);
 
+        String autorizacaoString = new String(autorizacaoBase64);
 
         System.out.println("Auth: " +autorizacaoCripto);
-        System.out.println("Senha: "+autorizacaoDescripto);
+        System.out.println("Senha: "+autorizacaoString);
+
+        String[] credencial = autorizacaoString.split(":");
+        String login = credencial[0];
+        String senha = credencial[1];
+
+        System.out.println("Login: "+login);
+        System.out.println("Senha: "+senha);
+
         filterChain.doFilter(request,response);
     }
 }
