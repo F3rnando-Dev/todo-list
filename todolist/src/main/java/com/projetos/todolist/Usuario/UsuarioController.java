@@ -23,7 +23,6 @@ public class UsuarioController {
     public ResponseEntity criaUsuario(@RequestBody UsuarioModel usuarioModel){
         var login = this.usuarioRepository.findByLogin(usuarioModel.getLogin());
         if (login != null){
-            System.out.println("USUARIO JÁ EXISTE!");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Usuário " +login.getLogin()+" já cadastrado!");
         }
 
