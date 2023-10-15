@@ -40,9 +40,10 @@ public class FiltroDeAutenticacaoParaTarefas extends OncePerRequestFilter {
             if (usuario == null) {
                 response.sendError(401, "Usuário sem autorização!");
             } else {
-
                 var verificacaoSenha = BCrypt.verifyer().verify(senhaCredencial.toCharArray(), usuario.getSenha());
                 if (verificacaoSenha.verified) {
+                    request.setAttribute("idLogin", usuario.getId());
+                    System.out.println(request.getAttribute("idLogin"));
                     filterChain.doFilter(request, response);
                 } else {
                     response.sendError(401);

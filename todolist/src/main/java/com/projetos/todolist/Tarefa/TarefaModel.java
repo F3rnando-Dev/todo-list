@@ -21,7 +21,7 @@ public class TarefaModel {
     private UUID id;
 
 
-    private String idLogin;
+    private UUID idLogin;
 
     @Column(length = 50)
     private String titulo;
