@@ -1,13 +1,11 @@
 package com.projetos.todolist.Tarefa;
 
+import com.projetos.todolist.Utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -37,5 +35,24 @@ public class TarefaController {
 
         var tarefa = this.tarefaRepository.save(tarefaModel);
         return ResponseEntity.status(HttpStatus.OK).body(tarefa);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity atualizaTarefa(@RequestBody TarefaModel tarefaModel, HttpServletRequest request, @PathVariable UUID id) {
+        var tarefa = this.tarefaRepository.findById(id).orElse(null);
+
+        if (tarefa == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Tarefa não encontrada");
+        }
+
+        var idRequest = request.getAttribute("idLogin");
+
+        if (!tarefa.getIdLogin().equals(idRequest)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Usuário não tem permissão para alterar essa tarefa");
+        }
+
+        Utils.copyNonNullProperties(tarefaModel, tarefa);
+        var tarefaAtualizada = this.tarefaRepository.save(tarefa);
+        return ResponseEntity.ok().body(tarefaAtualizada);
     }
 }
