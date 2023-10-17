@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -35,6 +36,13 @@ public class TarefaController {
 
         var tarefa = this.tarefaRepository.save(tarefaModel);
         return ResponseEntity.status(HttpStatus.OK).body(tarefa);
+    }
+
+    @GetMapping("/")
+    public List<TarefaModel> listaTarefas(HttpServletRequest request) {
+        var idLogin = request.getAttribute("idLogin");
+        var tarefa = this.tarefaRepository.findByIdLogin((UUID) idLogin);
+        return tarefa;
     }
 
     @PutMapping("/{id}")
